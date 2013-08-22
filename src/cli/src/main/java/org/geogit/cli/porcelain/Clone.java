@@ -64,6 +64,12 @@ public class Clone extends AbstractCommand implements CLICommand {
     @Parameter(names = { "--depth" }, description = "Depth of the clone.  If depth is less than 1, a full clone will be performed.")
     private int depth = 0;
 
+    @Parameter(names = { "-u", "--username" }, description = "user name")
+    private String username = null;
+
+    @Parameter(names = { "-p", "--password" }, description = "password")
+    private String password = null;
+
     @Parameter(names = { "--filter" }, description = "Ini filter file.  This will create a sparse clone.")
     private String filterFile;
 
@@ -173,6 +179,7 @@ public class Clone extends AbstractCommand implements CLICommand {
         CloneOp clone = cli.getGeogit().command(CloneOp.class);
         clone.setProgressListener(cli.getProgressListener());
         clone.setBranch(branch).setRepositoryURL(repoURL);
+        clone.setUserName(username).setPassword(password);
         clone.setDepth(depth);
 
         clone.call();

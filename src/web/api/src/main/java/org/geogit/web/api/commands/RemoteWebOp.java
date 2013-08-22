@@ -34,6 +34,10 @@ public class RemoteWebOp extends AbstractWebAPICommand {
 
     private String remoteURL;
 
+    private String username = null;
+
+    private String password = null;
+
     /**
      * Mutator for the list variable
      * 
@@ -68,6 +72,24 @@ public class RemoteWebOp extends AbstractWebAPICommand {
      */
     public void setRemoteURL(String remoteURL) {
         this.remoteURL = remoteURL;
+    }
+
+    /**
+     * Mutator for the username variable
+     * 
+     * @param username - the username to access the remote
+     */
+    public void setUserName(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Mutator for the password variable
+     * 
+     * @param password - the password to access the remote
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -120,7 +142,7 @@ public class RemoteWebOp extends AbstractWebAPICommand {
             final Remote remote;
             try {
                 remote = geogit.command(RemoteAddOp.class).setName(remoteName).setURL(remoteURL)
-                        .call();
+                        .setUserName(username).setPassword(password).call();
             } catch (RemoteException e) {
                 context.setResponseContent(CommandResponse.error(e.statusCode.toString()));
                 return;

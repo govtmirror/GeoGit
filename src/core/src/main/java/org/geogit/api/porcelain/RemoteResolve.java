@@ -28,7 +28,7 @@ public class RemoteResolve extends AbstractGeoGitOp<Optional<Remote>> implements
     final private ConfigDatabase config;
 
     /**
-     * Constructs a new {@code RemoteAddOp} with the given config database.
+     * Constructs a new {@code RemoteResolve} with the given config database.
      * 
      * @param config where to store the remote
      */
@@ -67,12 +67,15 @@ public class RemoteResolve extends AbstractGeoGitOp<Optional<Remote>> implements
             Optional<String> remoteFetch = config.get(remoteSection + ".fetch");
             Optional<String> remoteMapped = config.get(remoteSection + ".mapped");
             Optional<String> remoteMappedBranch = config.get(remoteSection + ".mappedBranch");
+            Optional<String> remoteUserName = config.get(remoteSection + ".username");
+            Optional<String> remotePassword = config.get(remoteSection + ".password");
             if (remoteFetchURL.isPresent() && remoteFetch.isPresent()) {
                 Optional<String> remotePushURL = config.get(remoteSection + ".pushurl");
 
                 Remote remote = new Remote(name, remoteFetchURL.get(),
                         remotePushURL.or(remoteFetchURL.get()), remoteFetch.get(), remoteMapped.or(
-                                "false").equals("true"), remoteMappedBranch.orNull());
+                                "false").equals("true"), remoteMappedBranch.orNull(),
+                        remoteUserName.orNull(), remotePassword.orNull());
                 result = Optional.of(remote);
             }
         }

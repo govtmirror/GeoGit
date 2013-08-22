@@ -256,6 +256,8 @@ public class CommandBuilder {
         command.setRemove(Boolean.valueOf(options.getFirstValue("remove", "false")));
         command.setRemoteName(options.getFirstValue("remoteName", null));
         command.setRemoteURL(options.getFirstValue("remoteURL", null));
+        command.setUserName(options.getFirstValue("username", null));
+        command.setPassword(options.getFirstValue("password", null));
         return command;
     }
 
