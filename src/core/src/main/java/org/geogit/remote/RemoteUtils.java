@@ -6,6 +6,8 @@
 package org.geogit.remote;
 
 import java.io.File;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 
 import org.geogit.api.Remote;
@@ -47,10 +49,19 @@ public class RemoteUtils {
                             new File(remoteConfig.getFetchURL()), localRepository);
                 }
             } else if (protocol.equals("http")) {
+                final String username = remoteConfig.getUserName();
+                final String password = remoteConfig.getPassword();
+                Authenticator.setDefault(new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, Remote
+                                .decryptPassword(password).toCharArray());
+                    }
+                });
                 if (remoteConfig.getMapped()) {
                     remoteRepo = new HttpMappedRemoteRepo(fetchURI.toURL(), localRepository);
                 } else {
-                    remoteRepo = new HttpRemoteRepo(fetchURI.toURL(), localRepository, deduplicationService);
+                    remoteRepo = new HttpRemoteRepo(fetchURI.toURL(), localRepository,
+                            deduplicationService);
                 }
             } else {
                 throw new UnsupportedOperationException(

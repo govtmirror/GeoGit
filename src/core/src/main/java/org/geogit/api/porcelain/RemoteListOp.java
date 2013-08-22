@@ -45,11 +45,14 @@ public class RemoteListOp extends AbstractGeoGitOp<ImmutableList<Remote>> {
             Optional<String> remoteFetch = config.get(remoteSection + ".fetch");
             Optional<String> remoteMapped = config.get(remoteSection + ".mapped");
             Optional<String> remoteMappedBranch = config.get(remoteSection + ".mappedBranch");
+            Optional<String> remoteUserName = config.get(remoteSection + ".username");
+            Optional<String> remotePassword = config.get(remoteSection + ".password");
             if (remoteFetchURL.isPresent() && remoteFetch.isPresent()) {
                 Optional<String> remotePushURL = config.get(remoteSection + ".pushurl");
                 allRemotes.add(new Remote(remoteName, remoteFetchURL.get(), remotePushURL
                         .or(remoteFetchURL.get()), remoteFetch.get(), remoteMapped.or("false")
-                        .equals("true"), remoteMappedBranch.orNull()));
+                        .equals("true"), remoteMappedBranch.orNull(), remoteUserName.orNull(),
+                        remotePassword.orNull()));
             }
 
         }

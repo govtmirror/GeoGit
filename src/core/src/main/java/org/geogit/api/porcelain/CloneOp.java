@@ -40,9 +40,14 @@ public class CloneOp extends AbstractGeoGitOp<Void> {
 
     private String repositoryURL;
 
+    private String username = null;
+
+    private String password = null;
+
     private Optional<Integer> depth = Optional.absent();
 
     private final Repository repository;
+
     private final DeduplicationService deduplicationService;
 
     /**
@@ -60,6 +65,24 @@ public class CloneOp extends AbstractGeoGitOp<Void> {
      */
     public CloneOp setRepositoryURL(final String repositoryURL) {
         this.repositoryURL = repositoryURL;
+        return this;
+    }
+
+    /**
+     * @param username user name for the repository
+     * @return {@code this}
+     */
+    public CloneOp setUserName(String username) {
+        this.username = username;
+        return this;
+    }
+
+    /**
+     * @param password password for the repository
+     * @return {@code this}
+     */
+    public CloneOp setPassword(String password) {
+        this.password = password;
         return this;
     }
 
@@ -98,13 +121,14 @@ public class CloneOp extends AbstractGeoGitOp<Void> {
 
         // Set up origin
         Remote remote = command(RemoteAddOp.class).setName("origin").setURL(repositoryURL)
-                .setMapped(repository.isSparse())
+                .setMapped(repository.isSparse()).setUserName(username).setPassword(password)
                 .setBranch(repository.isSparse() ? branch.get() : null).call();
 
         if (!depth.isPresent()) {
             // See if we are cloning a shallow clone. If so, a depth must be specified.
-            Optional<IRemoteRepo> remoteRepo = RemoteUtils.newRemote(
-                    GlobalInjectorBuilder.builder.build(), remote, repository, deduplicationService);
+            Optional<IRemoteRepo> remoteRepo = RemoteUtils
+                    .newRemote(GlobalInjectorBuilder.builder.build(), remote, repository,
+                            deduplicationService);
 
             Preconditions.checkState(remoteRepo.isPresent(), "Failed to connect to the remote.");
             try {

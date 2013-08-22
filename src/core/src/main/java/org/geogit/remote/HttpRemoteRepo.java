@@ -49,7 +49,7 @@ class HttpRemoteRepo extends AbstractRemoteRepo {
     private URL repositoryURL;
 
     private List<ObjectId> fetchedIds;
-    
+
     final private DeduplicationService deduplicationService;
 
     /**
@@ -57,7 +57,8 @@ class HttpRemoteRepo extends AbstractRemoteRepo {
      * 
      * @param repositoryURL the url of the remote repository
      */
-    public HttpRemoteRepo(URL repositoryURL, Repository localRepository, DeduplicationService deduplicationService) {
+    public HttpRemoteRepo(URL repositoryURL, Repository localRepository,
+            DeduplicationService deduplicationService) {
         super(localRepository);
         this.deduplicationService = deduplicationService;
         String url = repositoryURL.toString();
@@ -245,7 +246,8 @@ class HttpRemoteRepo extends AbstractRemoteRepo {
         endPush(refspec, ref.getObjectId(), originalRemoteRefValue.toString());
     }
 
-    private void sendPackedObjects(final List<ObjectId> toSend, final Set<ObjectId> roots, Deduplicator deduplicator) {
+    private void sendPackedObjects(final List<ObjectId> toSend, final Set<ObjectId> roots,
+            Deduplicator deduplicator) {
         Set<ObjectId> sent = new HashSet<ObjectId>();
         while (!toSend.isEmpty()) {
             try {
@@ -270,7 +272,8 @@ class HttpRemoteRepo extends AbstractRemoteRepo {
                 };
                 BinaryPackedObjects packer = new BinaryPackedObjects(
                         localRepository.getObjectDatabase());
-                packer.write(out, toSend, ImmutableList.copyOf(roots), sent, callback, false, deduplicator);
+                packer.write(out, toSend, ImmutableList.copyOf(roots), sent, callback, false,
+                        deduplicator);
                 out.flush();
                 out.close();
 
