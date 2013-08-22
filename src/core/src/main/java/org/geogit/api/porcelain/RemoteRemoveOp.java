@@ -63,13 +63,15 @@ public class RemoteRemoveOp extends AbstractGeoGitOp<Remote> {
         Optional<String> remotePushURL = Optional.absent();
         Optional<String> remoteMapped = config.get(remoteSection + ".mapped");
         Optional<String> remoteMappedBranch = config.get(remoteSection + ".mappedBranch");
+        Optional<String> remoteUserName = config.get(remoteSection + ".username");
+        Optional<String> remotePassword = config.get(remoteSection + ".password");
         if (remoteFetchURL.isPresent() && remoteFetch.isPresent()) {
             remotePushURL = config.get(remoteSection + ".pushurl");
         }
 
         remote = new Remote(name, remoteFetchURL.or(""), remotePushURL.or(remoteFetchURL.or("")),
                 remoteFetch.or(""), remoteMapped.or("false").equals("true"),
-                remoteMappedBranch.orNull());
+                remoteMappedBranch.orNull(), remoteUserName.orNull(), remotePassword.orNull());
 
         config.removeSection(remoteSection);
 

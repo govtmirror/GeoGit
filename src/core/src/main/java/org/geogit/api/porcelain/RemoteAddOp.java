@@ -28,6 +28,10 @@ public class RemoteAddOp extends AbstractGeoGitOp<Remote> {
 
     private String branch;
 
+    private String username;
+
+    private String password;
+
     private boolean mapped = false;
 
     final private ConfigDatabase config;
@@ -74,8 +78,15 @@ public class RemoteAddOp extends AbstractGeoGitOp<Remote> {
             config.put(configSection + ".mapped", "true");
             config.put(configSection + ".mappedBranch", branch);
         }
+        if (username != null) {
+            config.put(configSection + ".username", username);
+        }
+        if (password != null) {
+            password = Remote.encryptPassword(password);
+            config.put(configSection + ".password", password);
+        }
 
-        return new Remote(name, url, url, fetch, mapped, branch);
+        return new Remote(name, url, url, fetch, mapped, branch, username, password);
     }
 
     /**
@@ -102,6 +113,24 @@ public class RemoteAddOp extends AbstractGeoGitOp<Remote> {
      */
     public RemoteAddOp setBranch(String branch) {
         this.branch = branch;
+        return this;
+    }
+
+    /**
+     * @param username user name for the repository
+     * @return {@code this}
+     */
+    public RemoteAddOp setUserName(String username) {
+        this.username = username;
+        return this;
+    }
+
+    /**
+     * @param password password for the repository
+     * @return {@code this}
+     */
+    public RemoteAddOp setPassword(String password) {
+        this.password = password;
         return this;
     }
 
