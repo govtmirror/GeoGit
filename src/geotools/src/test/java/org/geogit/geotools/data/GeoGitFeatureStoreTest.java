@@ -311,4 +311,37 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
         assertEquals("John Doe", commits.get(0).getAuthor().getName().get());
         assertEquals("test message", commits.get(0).getMessage());
     }
+
+    @Test
+    public void testTransactionCommitAuthorAndEmail() throws Exception {
+
+        FeatureCollection<SimpleFeatureType, SimpleFeature> collection;
+        collection = DataUtilities.collection(Arrays.asList((SimpleFeature) points1,
+                (SimpleFeature) points2, (SimpleFeature) points3));
+
+        DefaultTransaction tx = new DefaultTransaction();
+        points.setTransaction(tx);
+        assertSame(tx, points.getTransaction());
+        try {
+            points.addFeatures(collection);
+
+            tx.putProperty(GeogitTransactionState.VERSIONING_COMMIT_AUTHOR, "john");
+            tx.putProperty(GeogitTransactionState.VERSIONING_COMMIT_MESSAGE, "test message");
+            tx.putProperty("fullname", "John Doe");
+            tx.putProperty("email", "jd@example.com");
+            tx.commit();
+            assertEquals(3, dataStore.getFeatureSource(pointsTypeName).getFeatures().size());
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        } finally {
+            tx.close();
+        }
+
+        List<RevCommit> commits = toList(geogit.command(LogOp.class).call());
+        assertFalse(commits.isEmpty());
+        assertTrue(commits.get(0).getAuthor().getName().isPresent());
+        assertEquals("John Doe", commits.get(0).getAuthor().getName().orNull());
+        assertEquals("jd@example.com", commits.get(0).getAuthor().getEmail().orNull());
+    }
 }
