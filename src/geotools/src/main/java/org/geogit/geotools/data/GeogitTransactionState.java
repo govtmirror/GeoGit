@@ -99,13 +99,18 @@ class GeogitTransactionState implements State {
          * This follows suite with the hack set on GeoSever's
          * org.geoserver.wfs.Transaction.getDatastoreTransaction()
          */
-        final String author = (String) this.tx.getProperty(VERSIONING_COMMIT_AUTHOR);
-        String commitMessage = (String) this.tx.getProperty(VERSIONING_COMMIT_MESSAGE);
+        final Optional<String> txUserName = getTransactionProperty(VERSIONING_COMMIT_AUTHOR);
+        final Optional<String> fullName = getTransactionProperty("fullname");
+        final Optional<String> email = getTransactionProperty("email");
+
+        final String author = fullName.isPresent() ? fullName.get() : txUserName.orNull();
+        String commitMessage = getTransactionProperty(VERSIONING_COMMIT_MESSAGE).orNull();
+
         this.geogitTx.command(AddOp.class).call();
         try {
             CommitOp commitOp = this.geogitTx.command(CommitOp.class);
-            if (author != null) {
-                commitOp.setAuthor(author, null);
+            if (txUserName != null) {
+                commitOp.setAuthor(author, email.orNull());
             }
             if (commitMessage == null) {
                 commitMessage = composeDefaultCommitMessage();
@@ -116,9 +121,17 @@ class GeogitTransactionState implements State {
             // ok
         }
 
-        this.geogitTx.setAuthor(author, null).commit();
+        this.geogitTx.setAuthor(author, email.orNull()).commit();
 
         this.geogitTx = null;
+    }
+
+    private Optional<String> getTransactionProperty(final String propName) {
+        Object property = this.tx.getProperty(propName);
+        if (property instanceof String) {
+            return Optional.of((String) property);
+        }
+        return Optional.absent();
     }
 
     private String composeDefaultCommitMessage() {
