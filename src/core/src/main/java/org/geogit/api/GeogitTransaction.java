@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.geogit.api.plumbing.TransactionEnd;
+import org.geogit.api.porcelain.ConflictsException;
 import org.geogit.repository.Index;
 import org.geogit.repository.Repository;
 import org.geogit.repository.StagingArea;
@@ -125,12 +126,12 @@ public class GeogitTransaction implements CommandLocator {
                 .append(']').toString();
     }
 
-    public void commit() {
+    public void commit() throws ConflictsException {
         locator.command(TransactionEnd.class).setAuthor(authorName.orNull(), authorEmail.orNull())
                 .setTransaction(this).setCancel(false).setRebase(true).call();
     }
 
-    public void commitSyncTransaction() {
+    public void commitSyncTransaction() throws ConflictsException {
         locator.command(TransactionEnd.class).setAuthor(authorName.orNull(), authorEmail.orNull())
                 .setTransaction(this).setCancel(false).call();
     }
