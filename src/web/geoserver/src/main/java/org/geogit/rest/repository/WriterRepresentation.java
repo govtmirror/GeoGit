@@ -31,7 +31,7 @@ abstract class WriterRepresentation extends OutputRepresentation {
             writer = new OutputStreamWriter(outputStream, getCharacterSet().getName());
         } else {
             // Use the default HTTP character set
-            writer = new OutputStreamWriter(outputStream, CharacterSet.ISO_8859_1.getName());
+            writer = new OutputStreamWriter(outputStream, CharacterSet.UTF_8.getName());
         }
 
         write(writer);
