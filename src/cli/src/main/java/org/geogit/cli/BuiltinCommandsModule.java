@@ -8,6 +8,7 @@ import org.geogit.cli.plumbing.Cat;
 import org.geogit.cli.plumbing.DiffTree;
 import org.geogit.cli.plumbing.LsTree;
 import org.geogit.cli.plumbing.MergeBase;
+import org.geogit.cli.plumbing.RebuildGraph;
 import org.geogit.cli.plumbing.RevList;
 import org.geogit.cli.plumbing.RevParse;
 import org.geogit.cli.plumbing.ShowRef;
@@ -121,6 +122,7 @@ public class BuiltinCommandsModule extends AbstractModule implements CLIModule {
         bind(Tag.class);
         bind(WalkGraph.class);
         bind(Version.class);
+        bind(RebuildGraph.class);
     }
 
 }
