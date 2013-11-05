@@ -556,6 +556,16 @@ public class ResponseWriter {
         while (iter.hasNext()) {
             Entry<PropertyDescriptor, AttributeDiff> entry = iter.next();
             out.writeStartElement("diff");
+            PropertyType attrType = entry.getKey().getType();
+            if (attrType instanceof GeometryType) {
+                writeElement("geometry", "true");
+                GeometryType gt = (GeometryType) attrType;
+                CoordinateReferenceSystem crs = gt.getCoordinateReferenceSystem();
+                if (crs != null) {
+                    writeElement("crs", CRS.toSRS(crs));
+                }
+                break;
+            }
             writeElement("attributename", entry.getKey().getName().toString());
             writeElement("changetype", entry.getValue().getType().toString());
             if (entry.getValue().getOldValue() != null
