@@ -254,6 +254,7 @@ public class CommandBuilder {
         RemoteWebOp command = new RemoteWebOp();
         command.setList(Boolean.valueOf(options.getFirstValue("list", "false")));
         command.setRemove(Boolean.valueOf(options.getFirstValue("remove", "false")));
+        command.setPing(Boolean.valueOf(options.getFirstValue("ping", "false")));
         command.setRemoteName(options.getFirstValue("remoteName", null));
         command.setRemoteURL(options.getFirstValue("remoteURL", null));
         command.setUserName(options.getFirstValue("username", null));
