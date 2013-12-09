@@ -330,10 +330,12 @@ public class ResponseWriter {
     /**
      * Writes the response for the {@link Commit} command to the stream.
      * 
+     * @param commit the commit
      * @param diff the changes returned from the command
      * @throws XMLStreamException
      */
-    public void writeCommitResponse(Iterator<DiffEntry> diff) throws XMLStreamException {
+    public void writeCommitResponse(RevCommit commit, Iterator<DiffEntry> diff)
+            throws XMLStreamException {
         int adds = 0, deletes = 0, changes = 0;
         DiffEntry diffEntry;
         while (diff.hasNext()) {
@@ -350,6 +352,7 @@ public class ResponseWriter {
                 break;
             }
         }
+        writeElement("commitId", commit.getId().toString());
         writeElement("added", Integer.toString(adds));
         writeElement("changed", Integer.toString(changes));
         writeElement("deleted", Integer.toString(deletes));

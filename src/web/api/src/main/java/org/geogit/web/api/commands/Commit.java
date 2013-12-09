@@ -97,6 +97,7 @@ public class Commit extends AbstractWebAPICommand {
             commit = null;
         }
         if (commit != null) {
+            final RevCommit commitToWrite = commit;
             final ObjectId parentId = commit.parentN(0).or(ObjectId.NULL);
             final Iterator<DiffEntry> diff = geogit.command(DiffOp.class).setOldVersion(parentId)
                     .setNewVersion(commit.getId()).call();
@@ -105,7 +106,7 @@ public class Commit extends AbstractWebAPICommand {
                 @Override
                 public void write(ResponseWriter out) throws Exception {
                     out.start();
-                    out.writeCommitResponse(diff);
+                    out.writeCommitResponse(commitToWrite, diff);
                     out.finish();
                 }
             });
