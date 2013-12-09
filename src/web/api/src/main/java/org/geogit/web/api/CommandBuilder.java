@@ -332,8 +332,8 @@ public class CommandBuilder {
     static FeatureDiffWeb buildFeatureDiff(ParameterSet options) {
         FeatureDiffWeb command = new FeatureDiffWeb();
         command.setPath(options.getFirstValue("path", null));
-        command.setOldCommitId(options.getFirstValue("oldCommitId", ObjectId.NULL.toString()));
-        command.setNewCommitId(options.getFirstValue("newCommitId", ObjectId.NULL.toString()));
+        command.setOldTreeish(options.getFirstValue("oldTreeish", ObjectId.NULL.toString()));
+        command.setNewTreeish(options.getFirstValue("newTreeish", ObjectId.NULL.toString()));
         command.setAll(Boolean.valueOf(options.getFirstValue("all", "false")));
         return command;
     }

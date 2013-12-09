@@ -10,8 +10,6 @@ import java.util.Map;
 import org.geogit.api.CommandLocator;
 import org.geogit.api.NodeRef;
 import org.geogit.api.ObjectId;
-import org.geogit.api.Ref;
-import org.geogit.api.RevCommit;
 import org.geogit.api.RevFeature;
 import org.geogit.api.RevFeatureType;
 import org.geogit.api.RevObject;
@@ -46,9 +44,9 @@ public class FeatureDiffWeb extends AbstractWebAPICommand {
 
     private String path;
 
-    private String newCommitId;
+    private String newTreeish;
 
-    private String oldCommitId;
+    private String oldTreeish;
 
     private boolean all;
 
@@ -62,21 +60,21 @@ public class FeatureDiffWeb extends AbstractWebAPICommand {
     }
 
     /**
-     * Mutator for the newCommitId
+     * Mutator for the newTreeish
      * 
-     * @param newCommitId - the id of the newer commit
+     * @param newTreeish - the id of the newer commit
      */
-    public void setNewCommitId(String newCommitId) {
-        this.newCommitId = newCommitId;
+    public void setNewTreeish(String newTreeish) {
+        this.newTreeish = newTreeish;
     }
 
     /**
-     * Mutator for the oldCommitId
+     * Mutator for the oldTreeish
      * 
-     * @param oldCommitId - the id of the older commit
+     * @param oldTreeish - the id of the older commit
      */
-    public void setOldCommitId(String oldCommitId) {
-        this.oldCommitId = oldCommitId;
+    public void setOldTreeish(String oldTreeish) {
+        this.oldTreeish = oldTreeish;
     }
 
     /**
@@ -96,24 +94,16 @@ public class FeatureDiffWeb extends AbstractWebAPICommand {
      * @return (Optional)NodeRef - the NodeRef that contains the metadata id and id needed to get
      *         the feature and featuretype
      * 
-     * @throws CommandSpecException - if the commit or treeid couldn't be resolved
+     * @throws CommandSpecException - if the treeid couldn't be resolved
      */
     private Optional<NodeRef> parseID(ObjectId id, CommandLocator geogit) {
         Optional<RevObject> object = geogit.command(RevObjectParse.class).setObjectId(id).call();
-        RevCommit commit = null;
-        if (object.isPresent() && object.get() instanceof RevCommit) {
-            commit = (RevCommit) object.get();
-        } else {
-            throw new CommandSpecException("Couldn't resolve id: " + id.toString() + " to a commit");
-        }
-
-        object = geogit.command(RevObjectParse.class).setObjectId(commit.getTreeId()).call();
 
         if (object.isPresent()) {
             RevTree tree = (RevTree) object.get();
             return geogit.command(FindTreeChild.class).setParent(tree).setChildPath(path).call();
         } else {
-            throw new CommandSpecException("Couldn't resolve commit's treeId");
+            throw new CommandSpecException("Couldn't resolve treeId");
         }
     }
 
@@ -130,21 +120,10 @@ public class FeatureDiffWeb extends AbstractWebAPICommand {
             throw new CommandSpecException("No path for feature name specifed");
         }
 
-        ObjectId newId = null;
         final CommandLocator geogit = this.getCommandLocator(context);
+        ObjectId newId = geogit.command(ResolveTreeish.class).setTreeish(newTreeish).call().get();
 
-        if (newCommitId.equals(ObjectId.NULL.toString()) || newCommitId.trim().isEmpty()) {
-            Optional<ObjectId> oid = geogit.command(ResolveTreeish.class).setTreeish(Ref.HEAD)
-                    .call();
-            if (oid.isPresent()) {
-                newId = oid.get();
-            } else {
-                throw new CommandSpecException("Something went wrong, couldn't resolve HEAD");
-            }
-        } else {
-            newId = ObjectId.valueOf(newCommitId);
-        }
-        ObjectId oldId = ObjectId.valueOf(oldCommitId);
+        ObjectId oldId = geogit.command(ResolveTreeish.class).setTreeish(oldTreeish).call().get();
 
         RevFeature newFeature = null;
         RevFeatureType newFeatureType = null;
