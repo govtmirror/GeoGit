@@ -105,7 +105,7 @@ public class GetCommitGraph extends AbstractWebAPICommand {
             @Override
             public void write(ResponseWriter out) throws Exception {
                 out.start();
-                out.writeCommits(history.iterator(), page, elementsPerPage);
+                out.writeCommits(history.iterator(), page, elementsPerPage, false);
                 out.finish();
             }
         });

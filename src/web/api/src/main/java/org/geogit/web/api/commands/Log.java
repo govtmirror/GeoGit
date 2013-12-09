@@ -50,6 +50,8 @@ public class Log extends AbstractWebAPICommand {
 
     boolean firstParentOnly;
 
+    boolean summarize;
+
     /**
      * Mutator for the limit variable
      * 
@@ -141,6 +143,15 @@ public class Log extends AbstractWebAPICommand {
     }
 
     /**
+     * Mutator for the summarize variable
+     * 
+     * @param summarize - true to only show a summary of the log
+     */
+    public void setSummarize(boolean summarize) {
+        this.summarize = summarize;
+    }
+
+    /**
      * Runs the command and builds the appropriate response
      * 
      * @param context - the context to use for this command
@@ -193,11 +204,12 @@ public class Log extends AbstractWebAPICommand {
         }
 
         final Iterator<RevCommit> log = op.call();
+        final boolean summarizeLog = summarize;
         context.setResponseContent(new CommandResponse() {
             @Override
             public void write(ResponseWriter out) throws Exception {
                 out.start();
-                out.writeCommits(log, page, elementsPerPage);
+                out.writeCommits(log, page, elementsPerPage, summarizeLog);
                 out.finish();
             }
         });

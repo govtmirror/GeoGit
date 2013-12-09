@@ -269,42 +269,65 @@ public class ResponseWriter {
         }
     }
 
+    private void writeCommit(RevCommit commit, String tag) throws XMLStreamException {
+        out.writeStartElement(tag);
+        writeElement("id", commit.getId().toString());
+        writeElement("tree", commit.getTreeId().toString());
+
+        ImmutableList<ObjectId> parentIds = commit.getParentIds();
+        out.writeStartElement("parents");
+        for (ObjectId parentId : parentIds) {
+            writeElement("id", parentId.toString());
+        }
+        out.writeEndElement();
+
+        writePerson("author", commit.getAuthor());
+        writePerson("committer", commit.getCommitter());
+
+        out.writeStartElement("message");
+        if (commit.getMessage() != null) {
+            out.writeCData(commit.getMessage());
+        }
+        out.writeEndElement();
+
+        out.writeEndElement();
+    }
+
     /**
      * Writes a set of {@link RevCommit}s to the stream.
      * 
      * @param entries an iterator for the RevCommits to write
      * @param page the page number to write
      * @param elementsPerPage the number of commits per page
+     * @param summarize summarize results if true
      * @throws XMLStreamException
      */
-    public void writeCommits(Iterator<RevCommit> entries, int page, int elementsPerPage)
-            throws XMLStreamException {
+    public void writeCommits(Iterator<RevCommit> entries, int page, int elementsPerPage,
+            boolean summarize) throws XMLStreamException {
         advance(entries, page * elementsPerPage);
         int counter = 0;
-        while (entries.hasNext() && counter < elementsPerPage) {
-            RevCommit entry = entries.next();
-            out.writeStartElement("commit");
-            writeElement("id", entry.getId().toString());
-            writeElement("tree", entry.getTreeId().toString());
-
-            ImmutableList<ObjectId> parentIds = entry.getParentIds();
-            out.writeStartElement("parents");
-            for (ObjectId parentId : parentIds) {
-                writeElement("id", parentId.toString());
+        RevCommit lastCommit = null;
+        if (summarize) {
+            if (entries.hasNext()) {
+                lastCommit = entries.next();
+                writeCommit(lastCommit, "untilCommit");
+                counter++;
             }
-            out.writeEndElement();
+        }
+        while (entries.hasNext() && (summarize || counter < elementsPerPage)) {
+            lastCommit = entries.next();
 
-            writePerson("author", entry.getAuthor());
-            writePerson("committer", entry.getCommitter());
-
-            out.writeStartElement("message");
-            if (entry.getMessage() != null) {
-                out.writeCData(entry.getMessage());
+            if (!summarize) {
+                writeCommit(lastCommit, "commit");
             }
-            out.writeEndElement();
 
-            out.writeEndElement();
             counter++;
+        }
+        if (summarize) {
+            if (lastCommit != null) {
+                writeCommit(lastCommit, "sinceCommit");
+            }
+            writeElement("numCommits", Integer.toString(counter));
         }
         if (entries.hasNext()) {
             writeElement("nextPage", "true");
