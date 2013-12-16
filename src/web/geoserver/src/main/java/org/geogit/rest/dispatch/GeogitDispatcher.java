@@ -18,6 +18,7 @@ import org.geogit.rest.repository.BeginPush;
 import org.geogit.rest.repository.CommandResource;
 import org.geogit.rest.repository.DepthResource;
 import org.geogit.rest.repository.EndPush;
+import org.geogit.rest.repository.ExportCSV;
 import org.geogit.rest.repository.FilteredChangesResource;
 import org.geogit.rest.repository.ManifestResource;
 import org.geogit.rest.repository.MergeFeatureResource;
@@ -117,6 +118,7 @@ public class GeogitDispatcher extends AbstractController {
         router.attach("/filteredchanges", new FilteredChangesResource());
         router.attach("/applychanges", new ApplyChangesResource());
         router.attach("/mergefeature", MergeFeatureResource.class);
+        router.attach("/exportcsv", ExportCSV.class);
         return router;
     }
 

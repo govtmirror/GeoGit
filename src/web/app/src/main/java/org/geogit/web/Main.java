@@ -26,6 +26,7 @@ import org.geogit.web.api.repo.BatchedObjectResource;
 import org.geogit.web.api.repo.BeginPush;
 import org.geogit.web.api.repo.DepthResource;
 import org.geogit.web.api.repo.EndPush;
+import org.geogit.web.api.repo.ExportCSV;
 import org.geogit.web.api.repo.FilteredChangesResource;
 import org.geogit.web.api.repo.ManifestResource;
 import org.geogit.web.api.repo.MergeFeatureResource;
@@ -122,6 +123,7 @@ public class Main extends Application {
         router.attach("/affectedfeatures", AffectedFeaturesResource.class);
         router.attach("/filteredchanges", FilteredChangesResource.class);
         router.attach("/applychanges", ApplyChangesResource.class);
+        router.attach("/exportcsv", ExportCSV.class);
         router.attach("/mergefeature", MergeFeatureResource.class);
         return router;
     }
