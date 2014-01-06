@@ -163,12 +163,7 @@ public class CheckoutOp extends AbstractGeoGitOp<CheckoutResult> {
 
                 if ((ours || theirs) && !node.isPresent()) {
                     // remove the node.
-                    RevTreeBuilder treeBuilder = new RevTreeBuilder(getIndex().getDatabase(),
-                            getWorkTree().getTree());
-                    treeBuilder.remove(st);
-                    RevTree newRoot = treeBuilder.build();
-                    getIndex().getDatabase().put(newRoot);
-                    getWorkTree().updateWorkHead(newRoot.getId());
+                    command(RemoveOp.class).addPathToRemove(st).call();
                 } else {
                     checkState(node.isPresent(), "pathspec '" + st
                             + "' didn't match a feature in the tree");
