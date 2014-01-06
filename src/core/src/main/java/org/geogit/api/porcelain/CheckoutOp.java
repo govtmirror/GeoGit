@@ -170,6 +170,9 @@ public class CheckoutOp extends AbstractGeoGitOp<CheckoutResult> {
                     getIndex().getDatabase().put(newRoot);
                     getWorkTree().updateWorkHead(newRoot.getId());
                 } else {
+                    checkState(node.isPresent(), "pathspec '" + st
+                            + "' didn't match a feature in the tree");
+
                     if (node.get().getType() == TYPE.TREE) {
                         RevTreeBuilder treeBuilder = new RevTreeBuilder(getIndex().getDatabase(),
                                 getWorkTree().getTree());
