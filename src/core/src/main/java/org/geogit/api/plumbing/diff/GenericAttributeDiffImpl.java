@@ -35,9 +35,9 @@ public class GenericAttributeDiffImpl implements AttributeDiff {
     @Override
     public TYPE getType() {
         TYPE type;
-        if (newValue == null) {
+        if (newValue == null || !newValue.isPresent()) {
             type = TYPE.REMOVED;
-        } else if (oldValue == null) {
+        } else if (oldValue == null || !oldValue.isPresent()) {
             type = TYPE.ADDED;
         } else if (oldValue.equals(newValue)) {
             type = TYPE.NO_CHANGE;
