@@ -518,6 +518,25 @@ public class ResponseWriter {
         }
     }
 
+    public void writeRebuildGraphResponse(ImmutableList<ObjectId> updatedObjects, boolean quiet)
+            throws XMLStreamException {
+        out.writeStartElement("RebuildGraph");
+        if (updatedObjects.size() > 0) {
+            writeElement("updatedGraphElements", Integer.toString(updatedObjects.size()));
+            if (!quiet) {
+                for (ObjectId object : updatedObjects) {
+                    out.writeStartElement("UpdatedObject");
+                    writeElement("ref", object.toString());
+                    out.writeEndElement();
+                }
+            }
+        } else {
+            writeElement("response",
+                    "No missing or incomplete graph elements (commits) were found.");
+        }
+        out.writeEndElement();
+    }
+
     public void writeFetchResponse(FetchResult result) throws XMLStreamException {
         out.writeStartElement("Fetch");
         if (result.getChangedRefs().entrySet().size() > 0) {
@@ -840,8 +859,7 @@ public class ResponseWriter {
                     @Override
                     public GeometryChange apply(FeatureInfo input) {
                         GeometryChange change = null;
-                        RevFeatureBuilder revBuilder = new RevFeatureBuilder();
-                        RevFeature revFeature = revBuilder.build(input.getFeature());
+                        RevFeature revFeature = RevFeatureBuilder.build(input.getFeature());
                         RevFeatureType featureType = input.getFeatureType();
                         Collection<PropertyDescriptor> attribs = featureType.type()
                                 .getDescriptors();
