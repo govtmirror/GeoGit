@@ -35,7 +35,7 @@ public interface RevTree extends RevObject {
      *       Asus Zenbook UX31A. A value of 256 shields significantly lower throughput and a higher
      *       one (like 4096) no significant improvement
      */
-    public static final int NORMALIZED_SIZE_LIMIT = 4096;
+    public static final int NORMALIZED_SIZE_LIMIT = 512;
 
     public static RevTree EMPTY = new RevTree() {
 
